@@ -1,0 +1,73 @@
+quarkus:
+        application:
+        name: oauth-delegate
+
+        http:
+        cookie:
+        same-site: lax
+        auth-session:
+        encryption-key: ${SESSION_ENCRYPTION_KEY:CHANGE_ME_TO_A_32_CHARS_STRING}
+
+        # OIDC Configuration
+        oidc:
+        enabled: true
+        tenant-enabled: true
+        auth-server-url: ${OAUTH_SERVER_URL}
+        client-id: ${OAUTH_CLIENT_ID}
+        credentials:
+        secret: ${OAUTH_CLIENT_SECRET}
+        # Set to true if using opaque tokens instead of JWT
+        token:
+        refresh-token-time-skew: 5M
+        principal-claim: sub
+        # Support for multiple identity providers
+        tenant-config:
+        # Microsoft EntraID
+        entra:
+        auth-server-url: https://login.microsoftonline.com/${ENTRA_TENANT_ID}/v2.0
+        client-id: ${ENTRA_CLIENT_ID}
+        credentials:
+        secret: ${ENTRA_CLIENT_SECRET}
+        token:
+        issuer: https://login.microsoftonline.com/${ENTRA_TENANT_ID}/v2.0
+        # Google
+        google:
+        auth-server-url: https://accounts.google.com
+        client-id: ${GOOGLE_CLIENT_ID}
+        credentials:
+        secret: ${GOOGLE_CLIENT_SECRET}
+        token:
+        issuer: https://accounts.google.com
+        # Facebook
+        facebook:
+        auth-server-url: https://www.facebook.com/v18.0/dialog/oauth
+        token-path: https://graph.facebook.com/v18.0/oauth/access_token
+        client-id: ${FACEBOOK_CLIENT_ID}
+        credentials:
+        secret: ${FACEBOOK_CLIENT_SECRET}
+        # Amazon Cognito
+        cognito:
+        auth-server-url: https://${COGNITO_DOMAIN}.auth.${COGNITO_REGION}.amazoncognito.com
+        client-id: ${COGNITO_CLIENT_ID}
+        credentials:
+        secret: ${COGNITO_CLIENT_SECRET}
+        token:
+        issuer: https://cognito-idp.${COGNITO_REGION}.amazonaws.com/${COGNITO_USER_POOL_ID}
+
+        # JWT Token Generation
+        smallrye-jwt:
+        enabled: true
+
+        # Infinispan Configuration
+        infinispan:
+        embedded:
+        cluster-name: auth-delegate-cluster
+        config-file: infinispan.xml
+
+        # Custom JWT Config
+        jwt:
+        # If not specified, a key will be generated on startup
+        signing-key-location: ${JWT_SIGNING_KEY_LOCATION:}
+        internal-token-expiration: ${JWT_INTERNAL_TOKEN_EXPIRATION:3600}  # In seconds
+        internal-token-issuer: ${JWT_INTERNAL_TOKEN_ISSUER:oauth-delegate}
+        internal-token-audience: ${JWT_INTERNAL_TOKEN_AUDIENCE:backend-services}
